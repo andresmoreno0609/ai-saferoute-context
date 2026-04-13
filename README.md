@@ -29,7 +29,8 @@ ai-saferoute-context/
 │   └── nfc.md              ← Sistema NFC
 │
 └── 05-shared/              ← Compartido entre front y back
-    └── api-contracts.md   ← Contratos de API
+    ├── api-contracts.md   ← Contratos de API
+    └── SafeRoute-API-Postman.json  ← Colección Postman para testing
 ```
 
 ---
@@ -61,7 +62,7 @@ En cada proyecto, configurar `.opencode/opencode.json` para cargar contextos aut
 ## 📅 Última Actualización
 
 - **Fecha:** 2026-04-13
-- **Versión:** 1.0.0
+- **Versión:** 1.1.0
 - **Proyecto:** SafeRoute - Sistema de gestión de transporte escolar
 
 ---
