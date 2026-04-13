@@ -56,6 +56,7 @@ En cada proyecto, configurar `.opencode/opencode.json` para cargar contextos aut
 1. Crear/actualizar archivos de contexto en la carpeta correspondiente
 2. Mantener consistencia con el proyecto SafeRoute
 3. Actualizar este README si se agrega nueva documentación
+4. **IMPORTANTE:** Al agregar nuevos endpoints en el código, actualizar `05-shared/SafeRoute-API-Postman.json`
 
 ---
 

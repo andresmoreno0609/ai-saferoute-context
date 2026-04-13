@@ -281,6 +281,27 @@
               }
             ]
           }
+        },
+        {
+          "name": "Volverse Conductor (from-user)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/drivers/from-user/USER_ID",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Juan Pérez\",\n  \"phone\": \"+573001234567\",\n  \"documentNumber\": \"1234567890\",\n  \"birthDate\": \"1990-05-15\",\n  \"address\": \"Calle 123, Bogotá\",\n  \"licenseNumber\": \"12345678\",\n  \"licenseCategory\": \"B\",\n  \"licenseExpirationDate\": \"2028-05-15\",\n  \"emergencyContact\": \"María Pérez\",\n  \"emergencyPhone\": \"+573001234568\",\n  \"yearsExperience\": 5,\n  \"photoUrl\": \"https://storage.example.com/driver-photo.jpg\",\n  \"bankName\": \"NEQUI\",\n  \"bankAccount\": \"3101234567\",\n  \"vehicleId\": \"UUID_DEL_VEHICULO\"\n}"
+            }
+          }
         }
       ]
     },
@@ -532,6 +553,27 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"token\": \"TU_FCM_TOKEN_AQUI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Volverse Acudiente (from-user)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/guardians/from-user/USER_ID",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pedro García\",\n  \"phone\": \"+573001234567\",\n  \"email\": \"pedro@email.com\",\n  \"documentNumber\": \"12345678\",\n  \"address\": \"Calle 123 #45-67, Bogotá\",\n  \"emergencyContact\": \"María García\",\n  \"emergencyPhone\": \"+573009876543\",\n  \"occupation\": \"Ingeniero\",\n  \"workPhone\": \"+5712345678\"\n}"
             }
           }
         }
