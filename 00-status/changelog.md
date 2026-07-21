@@ -5,13 +5,37 @@
 
 ---
 
-## 2026-07-21 — Wiki de retorno creada
+## 2026-07-21 — Wiki de retorno + Ticket 2 y 3 de Fase 0 completos
 
-**Repo:** `ai-saferoute-context`
+### `ai-saferoute-context`
 
-Creada la carpeta `00-status/` como punto de entrada para retomar el proyecto después de descansos largos. Incluye `project-status.md`, `roadmap.md`, `next-steps.md`, `changelog.md`, y `decisions/`.
+- Creada la carpeta `00-status/` como punto de entrada al retomar el proyecto. Incluye `project-status.md`, `roadmap.md`, `next-steps.md`, `changelog.md`, y `decisions/`. **Motivación:** después de 2+ meses sin tocar SafeRoute, era imposible saber dónde había quedado el trabajo. La docs técnica estaba (schema, architecture, API contracts) pero faltaba la capa de "estado".
+- Escrito **ADR 0002** — decisión de estandarizar la app en React Navigation clásico (no Expo Router). Documentado durante el fix del bug de useRouter.
 
-**Motivación:** después de 2+ meses sin tocar SafeRoute, era imposible saber dónde había quedado el trabajo. La docs técnica estaba (schema, architecture, API contracts) pero faltaba la capa de "estado".
+### `saferoute-app`
+
+**Ticket 2 (parche parcial) — IP hardcodeada actualizada:**
+
+Descubierto durante prueba en device físico: **9 archivos** de la app tenían la URL del backend hardcodeada como `192.168.1.8:8080` (IP vieja de otra red). Actualizada a la IP actual `192.168.40.9:8080` en los 9 archivos. **Este es un parche, no la solución definitiva** — el `.env` sigue pendiente (Ticket 2 completo). Cuando cambie de red, mismo problema.
+
+**Ticket 3 (completo) — Navegación arreglada + 20 pantallas migradas:**
+
+Descubierto durante prueba en device físico como bug latente: **20 pantallas de la app** (11 admin + 7 driver + 2 guardian) fueron escritas asumiendo Expo Router (`useRouter`, `useLocalSearchParams`), pero la app usa React Navigation clásico. Los símptomas: `ReferenceError: Property 'useRouter' doesn't exist` al navegar a esas pantallas. En varios casos el `import` de expo-router ni siquiera existía — `router` era completamente undefined.
+
+Migración de 20 pantallas hecha en una pasada:
+- Removidos todos los `import { useRouter, useLocalSearchParams } from 'expo-router';`.
+- Cambio de signatura: `function XxScreen()` → `function XxScreen({ navigation, route }: { navigation?: any; route?: any })`.
+- `router.push('/path')` → `navigation?.navigate('RouteName', params)`.
+- `router.back()` → `navigation?.goBack()`.
+- `useLocalSearchParams<{ x: string }>()` → `route?.params`.
+- Bonus: `DriverDashboardScreen` (no estaba en la lista) también estaba roto — fixed.
+- Bonus: varias pantallas tenían `useNavigation` importado del paquete equivocado (`@react-navigation/native-stack` en vez de `/native`) — removidos.
+
+`App.tsx` actualizado: **29 Stack.Screen** registradas (2 auth + 8 guardian + 11 admin + 8 driver). Antes eran 9 rutas.
+
+Verificación: `useRouter | expo-router | useLocalSearchParams | router.` en `src/` = **0 matches**.
+
+**Motivación de la sesión:** Andres estaba probando la app en su celular físico y no podía loguearse. Un diagnóstico paso a paso (chequeo de IPs, puertos, firewall) reveló primero el problema de IP hardcodeada, y después el bug latente de `useRouter`. Ambos se resolvieron en la sesión.
 
 ---
 

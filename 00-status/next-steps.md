@@ -1,15 +1,25 @@
 # Next Steps — SafeRoute
 
 > **Este archivo se pisa seguido.** Cuando cerrás un ticket, movelo a `changelog.md` y agregá el siguiente acá.
-> Última actualización: **2026-07-21**
+> Última actualización: **2026-07-21** (post-sesión de prueba en device físico)
 
 ---
 
 ## Contexto rápido
 
-Estás en **Fase 0 (Higiene)** del roadmap. El objetivo de esta fase es dejar los repos limpios antes de agregar features. Los tickets abajo salen de esa fase.
+Sesión del 2026-07-21: durante la prueba en device físico se descubrieron y arreglaron **dos bugs bloqueantes** que estaban en el Ticket 2 (IP hardcodeada) y Ticket 3 (navegación). Ver `changelog.md` para el detalle.
 
-Cuando termines los 5 tickets de acá, actualizá este archivo con los 5 tickets siguientes de la Fase 1.
+Estado de Fase 0 (higiene) ahora:
+
+| Ticket | Estado |
+|---|---|
+| Ticket 1 — Debug code en ProfileScreen | Pendiente |
+| Ticket 2 — Base URL a `.env` | **Parche aplicado, fix definitivo pendiente** |
+| Ticket 3 — Navigation completa | **Completo** (todas las 20 pantallas cableadas) |
+| Ticket 4 — Retry limit de token refresh | Pendiente |
+| Ticket 5 — Commit del Postman | Pendiente |
+
+Los tickets abajo son los siguientes en línea. Cuando termines los 5, actualizá esto con los tickets de Fase 1.
 
 ---
 
@@ -29,43 +39,30 @@ Cuando termines los 5 tickets de acá, actualizá este archivo con los 5 tickets
 
 ---
 
-## Ticket 2 — Mover base URL de la API a variables de entorno
+## Ticket 2 — Base URL a variables de entorno (FIX DEFINITIVO)
 
 **Repo:** `saferoute-app`
-**Archivos:** `src/lib/api.ts:19`, `src/screens/shared/ProfileScreen.tsx:11`, nuevo `.env` y `.env.example`
+**Archivos:** los 9 identificados el 2026-07-21 + nuevo `.env` + `.env.example`
 **Prioridad:** Alta
-**Estimación:** 1h
+**Estimación:** 1-2h
 
 **Qué hacer:**
-- Instalar `expo-constants` (ya viene con Expo) o `react-native-dotenv`.
-- Crear `.env` con `EXPO_PUBLIC_API_URL=http://192.168.1.8:8080/api/v1`.
-- Crear `.env.example` con la misma clave pero valor dummy (para el repo).
+- Instalar y configurar `expo-constants` con `extra` en `app.json`, o `react-native-dotenv`.
+- Crear `.env` con `EXPO_PUBLIC_API_URL=http://192.168.40.9:8080/api/v1` (ajustar IP según red).
+- Crear `.env.example` con valor dummy.
 - Agregar `.env` a `.gitignore` (verificar primero).
-- Reemplazar los usos de la URL hardcodeada por `process.env.EXPO_PUBLIC_API_URL`.
-- Documentar el paso en un README de setup (esto se completa en un ticket posterior).
+- **Refactor MÁS PROFUNDO:** eliminar las 9 constantes `API_URL` duplicadas en los 9 archivos. Todas las llamadas fetch deben usar el cliente centralizado en `src/lib/api.ts`. Las pantallas no deberían tener URLs de API adentro.
+- Ver ADR pendiente sobre esto (se puede escribir en esta iteración).
 
-**Criterio de "done":** grep por `192.168.1.8` en toda la app devuelve solo `.env`.
+**Criterio de "done":** grep por `192.168` en toda la app devuelve solo `.env`. Grep por `const API_URL` devuelve 0 matches en `src/screens/`.
 
 ---
 
-## Ticket 3 — Cablear navigation completa (driver + admin)
+## Ticket 3 — Navigation completa
 
-**Repo:** `saferoute-app`
-**Archivos:** `App.tsx`
-**Prioridad:** Alta
-**Estimación:** 2-3h
+**COMPLETO** — movido a `changelog.md` el 2026-07-21.
 
-**Qué hacer:**
-- Diseñar la estructura de navegación completa. Sugerencia:
-  - Stack raíz con `AuthNavigator` (Login, Register) y `AppNavigator` (post-login).
-  - `AppNavigator` con tabs bottom o drawer según rol del usuario (Guardian/Driver/Admin).
-  - Cada rol tiene su propio stack anidado con sus pantallas.
-- Registrar en `App.tsx` las 20+ pantallas hoy inalcanzables:
-  - Driver: Dashboard, MyRoutes, StartRoute, EndRoute, Tracking, ScanNFC, EventForm, CompleteProfile.
-  - Admin: Dashboard, Users, UserDetail, UserForm, Routes, RouteDetail, RouteForm, Vehicles, VehicleDetail, VehicleForm, VerifyDriver.
-- Verificar redirección post-login según rol.
-
-**Criterio de "done":** un usuario que hace login como driver o admin llega a su dashboard y puede navegar a todas sus pantallas.
+Detalles del refactor y decisión arquitectónica ver `decisions/0002-navegacion-react-navigation-clasico.md`.
 
 ---
 
@@ -101,14 +98,27 @@ Cuando termines los 5 tickets de acá, actualizá este archivo con los 5 tickets
 
 ---
 
-## Después de estos 5
+## Ticket 6 — Prueba end-to-end en device físico
 
-Cuando termines la Fase 0, los próximos 5 tickets van a salir de la **Fase 1**:
+**Repo:** `saferoute-app`
+**Prioridad:** Alta
+**Estimación:** 1h (manual)
+
+Después del refactor de navegación del 2026-07-21, probar en device físico los 3 flujos completos:
+1. Login como admin → navegar por Dashboard, Users, Routes, Vehicles, Verify.
+2. Login como driver → Dashboard, MyRoutes, StartRoute, Tracking, ScanNFC, EventForm.
+3. Login como guardian → Dashboard, Children, ChildForm, ChildDetail, Notifications, RouteStatus.
+
+**Criterio de "done":** los 3 roles pueden atravesar sus flujos principales sin crashes ni errores en consola. Documentar bugs encontrados como nuevos tickets.
+
+---
+
+## Después de estos 6
+
+Cuando termines la Fase 0, los próximos tickets van a salir de la **Fase 1**:
 
 1. Integrar FCM push notifications (backend + app).
 2. Migrar el backend a Flyway con `V1__initial_schema.sql`.
 3. Usar TanStack Query en todos los listados de la app.
 4. Agregar `ErrorBoundary` global en la app.
 5. Completar `03-frontend/` en el repo de contexto (design-system, navigation, state).
-
-Pero eso lo revisamos cuando lleguemos.
