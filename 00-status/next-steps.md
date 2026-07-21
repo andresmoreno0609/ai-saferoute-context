@@ -91,7 +91,8 @@ Detalles del refactor y decisión arquitectónica ver `decisions/0002-navegacion
 
 **Qué hacer:**
 - Verificar el diff del Postman.
-- Commitear con mensaje descriptivo: `docs(api): update Postman with roles[] and info-validate endpoints`.
+- **Agregar además** el nuevo endpoint `GET /api/v1/dashboard/stats` (implementado el 2026-07-21).
+- Commitear con mensaje descriptivo: `docs(api): update Postman with roles[], info-validate, and dashboard endpoints`.
 - Push.
 
 **Criterio de "done":** `git status` en `ai-saferoute-context` limpio.

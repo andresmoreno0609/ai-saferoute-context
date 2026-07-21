@@ -5,7 +5,7 @@
 
 ---
 
-## 2026-07-21 — Wiki de retorno + Ticket 2 y 3 de Fase 0 completos
+## 2026-07-21 — Wiki de retorno + Ticket 2, 3 y feature dashboard stats
 
 ### `ai-saferoute-context`
 
@@ -36,6 +36,30 @@ Migración de 20 pantallas hecha en una pasada:
 Verificación: `useRouter | expo-router | useLocalSearchParams | router.` en `src/` = **0 matches**.
 
 **Motivación de la sesión:** Andres estaba probando la app en su celular físico y no podía loguearse. Un diagnóstico paso a paso (chequeo de IPs, puertos, firewall) reveló primero el problema de IP hardcodeada, y después el bug latente de `useRouter`. Ambos se resolvieron en la sesión.
+
+### `saferoute` (backend)
+
+**Feature nueva — `GET /api/v1/dashboard/stats` implementado:**
+
+Al probar el AdminDashboard en device físico apareció el error `No static resource api/v1/dashboard/stats`. La app llamaba a un endpoint que nunca se había implementado en el backend.
+
+Módulo `dashboard/` nuevo creado siguiendo el patrón hexagonal existente:
+- `common/dto/dashboard/DashboardStatsResponse.java` — record con `@Builder`, 4 campos: `totalUsers`, `activeRoutes`, `pendingDrivers`, `expiringDocuments`.
+- `dashboard/controller/DashboardController.java` — `@RestController` en `/api/v1/dashboard` con `GET /stats`. Protegido con `@PreAuthorize("hasRole('ADMIN')")`.
+- `dashboard/adapter/DashboardAdapter.java` — `@Component` que delega al use case (siguiendo la convención de otros módulos, sin interface + impl separadas).
+- `dashboard/usecase/GetDashboardStatsUseCase.java` — extiende `UseCaseAdvance<Void, DashboardStatsResponse>`, compone counts de 5 repositorios.
+
+Repos modificados (agregado 1 método a cada uno):
+- `RouteRepository.countByStatus(RouteStatus)`
+- `DriverRepository.countByInfoValidate(Boolean)`
+- `DriverDocumentRepository.countByEndDateBetween(LocalDate, LocalDate)`
+- `VehicleDocumentRepository.countByEndDateBetween(LocalDate, LocalDate)`
+
+**Definición de "expiring documents":** documentos (driver + vehicle) con `endDate` entre hoy y hoy+30 días.
+
+**Nota:** el field que existe es `endDate`, no `expiryDate` como sugería el diseño inicial. Adaptado.
+
+Postman collection **no actualizada** en este commit — se actualiza junto con los otros endpoints pendientes en Ticket 5.
 
 ---
 
